@@ -1,0 +1,281 @@
+<div class="main-container">
+   
+    <div class="content-wrapper">
+     <div class="content-wrapper-header">
+      
+      
+      
+      <!-- <img class="content-wrapper-img" src="https://assets.codepen.io/3364143/glass.png" alt=""> -->
+     </div>
+     <div class="content-section-title">
+      <div class="filter">
+        <div class="optimize_btn">
+          <h4>Site onboarding</h4>
+        </div>
+        
+  
+      </div>
+    </div>
+     <div class="apps-card ">
+      <div class="app-card-content-wrapper">
+       <span>
+        <mat-icon>search</mat-icon>
+        Locate Your Site
+       </span>
+       <div class="app-card__subtext">Seach for your Site with Location name and Drag marker to your Lite location </div>
+       <div class="app-card-buttons">
+        <button class="content-button status-button"  [routerLinkActive]="['router-link-active']" [routerLink]="['/add-site']">Get Started</button>
+        
+       </div>
+      </div>
+      <div class="app-card-content-wrapper">
+       <span>
+        <mat-icon>add_location</mat-icon>
+        Add Facility
+       </span>
+       <div class="app-card__subtext">Add a Facility for selected site  </div>
+       <div class="app-card-buttons">
+        <button class="content-button status-button"  #menuTrigger="matMenuTrigger" [matMenuTriggerFor]="menu" >{{SelectedSite}} </button>
+        
+        <!-- <button mat-icon-button [mat-dialog-close]="'close'" [disabled]="!SelectedSite" (click)="goToAddLevel()" style="position: relative; border: none; color: #3a6df0;">
+         <mat-icon>arrow_right_alt</mat-icon></button> -->
+        
+         
+        <mat-menu  #menu="matMenu" class="mat-menu-dropdown">
+          <div *ngFor="let site of AllSites" class="">
+            <button mat-menu-item (click)="setSelectedSiteValue(site)" >
+              <span>{{site.siteName}}</span>
+            </button>
+          </div>
+          
+          
+        </mat-menu>
+       </div>
+      </div>
+      <div class="app-card-content-wrapper">
+       <span>
+        <mat-icon>layers</mat-icon>
+        Add Level
+       </span>
+       <div class="app-card__subtext">Add Level For selected Site and Facility</div>
+       <div class="app-card-buttons">
+        <span *ngFor="let item of navItems">
+          <!-- Handle branch node buttons here -->
+          <span  *ngIf="item.children && item.children.length > 0">
+            <button  class="content-button status-button" [matMenuTriggerFor]="menu.childMenu">
+              {{item.displayName}}
+            </button>
+            <app-menu-item  #menu [items]="item.children"></app-menu-item>
+          </span>
+          <!-- Leaf node buttons here -->
+          <span *ngIf="!item.children || item.children.length === 0">
+            <button mat-button color="primary" >
+              {{item.displayName}}
+            </button>
+          </span>
+        </span>
+        <!-- <button class="content-button status-button">get Started</button>
+        <div class="menu"></div> -->
+       </div>
+      </div>
+      <div class="app-card-content-wrapper">
+        <span>
+          <mat-icon>devices_other</mat-icon>
+         Device Mapping
+        </span>
+        <div class="app-card__subtext">Onboard devices for lavel and spaces</div>
+        <div class="app-card-buttons">
+          <span *ngFor="let item of navItems">
+            <!-- Handle branch node buttons here -->
+            <span  *ngIf="item.children && item.children.length > 0">
+              <button  class="content-button status-button" [matMenuTriggerFor]="menu.childMenu">
+                {{item.displayName}}
+              </button>
+              <app-device-menu  #menu [items]="item.children"></app-device-menu>
+            </span>
+            <!-- Leaf node buttons here -->
+            <span *ngIf="!item.children || item.children.length === 0">
+              <button mat-button color="primary" >
+                {{item.displayName}}
+              </button>
+            </span>
+          </span>
+          <!-- <button class="content-button status-button">get Started</button>
+          <div class="menu"></div> -->
+         </div>
+       </div>
+     </div>
+     <div class="content-section">
+      <div class="content-section-title">
+        <div class="filter">
+          <div class="optimize_btn">
+            <h4>UnMapped Devices </h4>
+          </div>
+          
+    
+        </div>
+        <div class="search-bar">
+          <input  id="filter" matInput (keyup)="applyFilter($event)" placeholder="Filter Table Data" #input />
+
+        </div>
+        <div class="filter">
+          <div class="optimize_btn">
+            <button class="content-button status-button" (click)="AddDevice()">Add a Device</button>
+
+            
+          </div>
+        </div>
+       </div>
+       <div>
+        
+        
+        <ul>
+          <table mat-table [dataSource]="dataSource" multiTemplateDataRows class="mat-elevation-z8">
+            <ng-container matColumnDef="{{column}}"  *ngFor="let column of columnsToDisplay">
+              <th  mat-header-cell *matHeaderCellDef class="column-name" style=" text-align: center; color: aliceblue;background-color: rgba(16 18 27 / 40%);">
+                <p *ngIf="column!=='DeviceId' && column !== 'Delete'">{{column | uppercase }}</p> 
+                
+              </th>
+              <tbody >
+                <tr mat-header-row >
+                  <td mat-cell *matCellDef="let element" >
+                    <button *ngIf="column === 'Delete'" mat-icon-button (click)="deleteElement(element)">
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    <p *ngIf="column!=='DeviceId' && column !== 'Delete'"  class="table-column" style=" text-transform: capitalize;text-align: center; color: aliceblue;"
+                      >{{ element[column]| titlecase }}</p>
+                    
+                  </td>
+                </tr>
+              </tbody>
+             
+              
+            </ng-container>
+    
+            <ng-container matColumnDef="spacerColumn">
+              <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplay.length"></td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+            <tr mat-row *matRowDef="let element; columns: columnsToDisplay;" class="example-element-row-bg  tablerow"
+              [class.example-expanded-row]="expandedElement === element"
+              (click)="expandedElement = expandedElement === element ? null : element">
+            </tr>
+          </table>
+          
+        <mat-paginator style=" text-align: center; color: aliceblue;background-color: rgba(16 18 27 / 40%); border-bottom-left-radius: 14px; border-bottom-right-radius: 14px;"
+        [pageSizeOptions]="[3, 5, 10]"
+        showFirstLastButtons
+      ></mat-paginator>
+        </ul>
+       
+       </div>
+          
+        
+      
+    
+    </div>
+     <!-- <div class="content-section">
+      <div class="content-section-title">Sites in your plan</div>
+      <div class="apps-card">
+       <div class="app-card">
+        <span>
+        
+         Premiere Pro
+        </span>
+        <div class="app-card__subtext">Edit, master and create fully proffesional videos</div>
+        <div class="app-card-buttons">
+         <button class="content-button status-button">Update</button>
+         <div class="menu"></div>
+        </div>
+       </div>
+       <div class="app-card">
+        <span>
+      
+         InDesign
+        </span>
+        <div class="app-card__subtext">Design and publish great projects & mockups</div>
+        <div class="app-card-buttons">
+         <button class="content-button status-button">Update</button>
+         <div class="menu"></div>
+        </div>
+       </div>
+       <div class="app-card">
+        <span>
+         
+         After Effects
+        </span>
+        <div class="app-card__subtext">Industry Standart motion graphics & visual effects</div>
+        <div class="app-card-buttons">
+         <button class="content-button status-button">Update</button>
+         <div class="menu"></div>
+        </div>
+       </div>
+      </div>
+     </div> -->
+     <div class="content-section">
+      <div class="content-section-title">
+        <div class="filter">
+          <div class="optimize_btn">
+            <h4>All Sites </h4>
+          </div>
+          
+    
+        </div>
+      </div>
+      <div class="Crl-container" #container>
+        <mat-icon class="left" *ngIf="totalPages > 1" (click)="currentPage != 1 && changePage(-1)" [ngClass]="{'disabled':currentPage === 1}" > keyboard_arrow_left</mat-icon>
+        <div class="Crl-cards" [ngClass]="{'w-100': totalPages === 1}">
+          <div class="Crl-overflow" [ngStyle]="{'width': overflowWidth, 'left': pagePosition}">
+            <div class="Crl-card" *ngFor="let i of arr; let index = index" [ngStyle]="{'width': cardWidth}">
+              
+                <div class="card-image">
+                  <img [src]='i.fileUrl'>
+                </div>
+                <div class="card-title">
+                  <p>{{i.siteName}}</p>
+                </div>
+                <div class="card-subtitle">
+                  <p>Total Facilities : {{i.total_Facilities}}
+                    </p>
+                </div>
+                
+                <div class="learn-btn">
+                  <!-- <button class="content-button status-button" type="button">Know more</button> -->
+                  <!-- <button class="content-button status-button" type="button">
+                    <span class="material-icons" style=" margin-top: 80px; margin-left: -44px; font-size: 30px;">search</span>
+                  </button>
+                  <button class="content-button status-button" type="button">
+                    <span class="material-icons" style=" margin-top: 80px; margin-left: 0px;font-size: 30px;">edit</span>
+                  </button>
+                  <button class="content-button status-button" type="button">
+                    <span class="material-icons" style=" margin-top: 80px; margin-left: 50px;font-size: 30px;">delete</span>
+                  </button> -->
+                  <!-- <div class="icon-button search-button">
+                    <span class="material-icons" style=" margin-top: 80px; margin-left: -62px;font-size: 30px;">search</span>
+                  </div>
+                  <div class="icon-button edit-button">
+                    <span class="material-icons" style=" margin-top: 80px; margin-left: -3px;font-size: 30px;">edit</span>
+                  </div>
+                  <div class="icon-button delete-button">
+                    <span class="material-icons" style=" margin-top: 80px; margin-left: 62px;font-size: 30px;">delete</span>
+                  </div>
+                  <button mat-button><mat-icon>delete</mat-icon></button> -->
+                  <!-- <button mat-mini-fab><mat-icon>search</mat-icon></button> -->
+                  <button class="content-button status-button" type="button"(click)="GoToViewDetails(i)">
+                  <mat-icon>remove_red_eye</mat-icon></button>
+                  <button class="content-button status-button" type="button">
+                  <mat-icon>edit</mat-icon></button>
+                  <button class="content-button status-button" type="button">
+                  <mat-icon>delete</mat-icon></button>
+                </div>
+              
+            </div>
+          </div>
+        </div>
+        <mat-icon class="right" *ngIf="totalPages > 1" (click)="currentPage != totalPages && changePage(+1)"
+          [ngClass]="{'disabled':currentPage === totalPages}">keyboard_arrow_right</mat-icon>
+      </div>
+     </div>
+    </div>
+   </div>
